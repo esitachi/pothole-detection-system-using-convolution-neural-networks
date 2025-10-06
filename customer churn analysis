@@ -1,0 +1,457 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMJ6Ucjef7/gXo9CfpDnDf8",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/esitachi/pothole-detection-system-using-convolution-neural-networks/blob/master/customer%20churn%20analysis\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "ct-dMXYPrYwE"
+      },
+      "outputs": [],
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "import matplotlib.pyplot as plt\n",
+        "import seaborn as sns\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "from sklearn.preprocessing import LabelEncoder, StandardScaler\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.metrics import classification_report, confusion_matrix, accuracy_score"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "5eb94fd2"
+      },
+      "source": [
+        "import os\n",
+        "\n",
+        "# List the contents of the '/content/drive/My Drive/' directory\n",
+        "drive_path = '/content/drive/My Drive/'\n",
+        "if os.path.exists(drive_path):\n",
+        "    print(f\"Contents of '{drive_path}':\")\n",
+        "    for item in os.listdir(drive_path):\n",
+        "        print(item)\n",
+        "else:\n",
+        "    print(f\"Error: The directory '{drive_path}' was not found. Please ensure Google Drive is mounted correctly.\")"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df = pd.read_csv(r\"C:\\Users\\eshaa\\OneDrive\\Desktop\\WA_Fn-UseC_-Telco-Customer-Churn.csv\")\n",
+        "print(df.head())\n",
+        "print(df.info())\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 321
+        },
+        "id": "0RDyucNbr8Ry",
+        "outputId": "5dbee221-e3f1-4d7c-9fa4-2958e82671a9"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "FileNotFoundError",
+          "evalue": "[Errno 2] No such file or directory: 'C:\\\\Users\\\\eshaa\\\\OneDrive\\\\Desktop\\\\WA_Fn-UseC_-Telco-Customer-Churn.csv'",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mFileNotFoundError\u001b[0m                         Traceback (most recent call last)",
+            "\u001b[0;32m/tmp/ipython-input-1151404172.py\u001b[0m in \u001b[0;36m<cell line: 0>\u001b[0;34m()\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mdf\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mpd\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mread_csv\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34mr\"C:\\Users\\eshaa\\OneDrive\\Desktop\\WA_Fn-UseC_-Telco-Customer-Churn.csv\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      2\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdf\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mhead\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdf\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0minfo\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.12/dist-packages/pandas/io/parsers/readers.py\u001b[0m in \u001b[0;36mread_csv\u001b[0;34m(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, date_format, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, encoding_errors, dialect, on_bad_lines, delim_whitespace, low_memory, memory_map, float_precision, storage_options, dtype_backend)\u001b[0m\n\u001b[1;32m   1024\u001b[0m     \u001b[0mkwds\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mupdate\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mkwds_defaults\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1025\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 1026\u001b[0;31m     \u001b[0;32mreturn\u001b[0m \u001b[0m_read\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfilepath_or_buffer\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mkwds\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m   1027\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1028\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.12/dist-packages/pandas/io/parsers/readers.py\u001b[0m in \u001b[0;36m_read\u001b[0;34m(filepath_or_buffer, kwds)\u001b[0m\n\u001b[1;32m    618\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    619\u001b[0m     \u001b[0;31m# Create the parser.\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 620\u001b[0;31m     \u001b[0mparser\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mTextFileReader\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfilepath_or_buffer\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m**\u001b[0m\u001b[0mkwds\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    621\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    622\u001b[0m     \u001b[0;32mif\u001b[0m \u001b[0mchunksize\u001b[0m \u001b[0;32mor\u001b[0m \u001b[0miterator\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.12/dist-packages/pandas/io/parsers/readers.py\u001b[0m in \u001b[0;36m__init__\u001b[0;34m(self, f, engine, **kwds)\u001b[0m\n\u001b[1;32m   1618\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1619\u001b[0m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mhandles\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mIOHandles\u001b[0m \u001b[0;34m|\u001b[0m \u001b[0;32mNone\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 1620\u001b[0;31m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_engine\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_make_engine\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mf\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mengine\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m   1621\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1622\u001b[0m     \u001b[0;32mdef\u001b[0m \u001b[0mclose\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m->\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.12/dist-packages/pandas/io/parsers/readers.py\u001b[0m in \u001b[0;36m_make_engine\u001b[0;34m(self, f, engine)\u001b[0m\n\u001b[1;32m   1878\u001b[0m                 \u001b[0;32mif\u001b[0m \u001b[0;34m\"b\"\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mmode\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1879\u001b[0m                     \u001b[0mmode\u001b[0m \u001b[0;34m+=\u001b[0m \u001b[0;34m\"b\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 1880\u001b[0;31m             self.handles = get_handle(\n\u001b[0m\u001b[1;32m   1881\u001b[0m                 \u001b[0mf\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1882\u001b[0m                 \u001b[0mmode\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.12/dist-packages/pandas/io/common.py\u001b[0m in \u001b[0;36mget_handle\u001b[0;34m(path_or_buf, mode, encoding, compression, memory_map, is_text, errors, storage_options)\u001b[0m\n\u001b[1;32m    871\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0mioargs\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mencoding\u001b[0m \u001b[0;32mand\u001b[0m \u001b[0;34m\"b\"\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mioargs\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mmode\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    872\u001b[0m             \u001b[0;31m# Encoding\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 873\u001b[0;31m             handle = open(\n\u001b[0m\u001b[1;32m    874\u001b[0m                 \u001b[0mhandle\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    875\u001b[0m                 \u001b[0mioargs\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mmode\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;31mFileNotFoundError\u001b[0m: [Errno 2] No such file or directory: 'C:\\\\Users\\\\eshaa\\\\OneDrive\\\\Desktop\\\\WA_Fn-UseC_-Telco-Customer-Churn.csv'"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "# In Colab, you need to mount your Google Drive and use the path from there\n",
+        "# Replace this with the actual path to your file in Google Drive after mounting\n",
+        "df = pd.read_csv(\"/content/drive/My Drive/WA_Fn-UseC_-Telco-Customer-Churn.csv\")\n",
+        "print(df.head())\n",
+        "print(df.info())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "fftA4Nn93owo",
+        "outputId": "edf2786f-0a34-4b08-f802-884943c50f11"
+      },
+      "execution_count": 28,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "   customerID  gender  SeniorCitizen Partner Dependents  tenure PhoneService  \\\n",
+            "0  7590-VHVEG  Female              0     Yes         No       1           No   \n",
+            "1  5575-GNVDE    Male              0      No         No      34          Yes   \n",
+            "2  3668-QPYBK    Male              0      No         No       2          Yes   \n",
+            "3  7795-CFOCW    Male              0      No         No      45           No   \n",
+            "4  9237-HQITU  Female              0      No         No       2          Yes   \n",
+            "\n",
+            "      MultipleLines InternetService OnlineSecurity  ... DeviceProtection  \\\n",
+            "0  No phone service             DSL             No  ...               No   \n",
+            "1                No             DSL            Yes  ...              Yes   \n",
+            "2                No             DSL            Yes  ...               No   \n",
+            "3  No phone service             DSL            Yes  ...              Yes   \n",
+            "4                No     Fiber optic             No  ...               No   \n",
+            "\n",
+            "  TechSupport StreamingTV StreamingMovies        Contract PaperlessBilling  \\\n",
+            "0          No          No              No  Month-to-month              Yes   \n",
+            "1          No          No              No        One year               No   \n",
+            "2          No          No              No  Month-to-month              Yes   \n",
+            "3         Yes          No              No        One year               No   \n",
+            "4          No          No              No  Month-to-month              Yes   \n",
+            "\n",
+            "               PaymentMethod MonthlyCharges  TotalCharges Churn  \n",
+            "0           Electronic check          29.85         29.85    No  \n",
+            "1               Mailed check          56.95        1889.5    No  \n",
+            "2               Mailed check          53.85        108.15   Yes  \n",
+            "3  Bank transfer (automatic)          42.30       1840.75    No  \n",
+            "4           Electronic check          70.70        151.65   Yes  \n",
+            "\n",
+            "[5 rows x 21 columns]\n",
+            "<class 'pandas.core.frame.DataFrame'>\n",
+            "RangeIndex: 7043 entries, 0 to 7042\n",
+            "Data columns (total 21 columns):\n",
+            " #   Column            Non-Null Count  Dtype  \n",
+            "---  ------            --------------  -----  \n",
+            " 0   customerID        7043 non-null   object \n",
+            " 1   gender            7043 non-null   object \n",
+            " 2   SeniorCitizen     7043 non-null   int64  \n",
+            " 3   Partner           7043 non-null   object \n",
+            " 4   Dependents        7043 non-null   object \n",
+            " 5   tenure            7043 non-null   int64  \n",
+            " 6   PhoneService      7043 non-null   object \n",
+            " 7   MultipleLines     7043 non-null   object \n",
+            " 8   InternetService   7043 non-null   object \n",
+            " 9   OnlineSecurity    7043 non-null   object \n",
+            " 10  OnlineBackup      7043 non-null   object \n",
+            " 11  DeviceProtection  7043 non-null   object \n",
+            " 12  TechSupport       7043 non-null   object \n",
+            " 13  StreamingTV       7043 non-null   object \n",
+            " 14  StreamingMovies   7043 non-null   object \n",
+            " 15  Contract          7043 non-null   object \n",
+            " 16  PaperlessBilling  7043 non-null   object \n",
+            " 17  PaymentMethod     7043 non-null   object \n",
+            " 18  MonthlyCharges    7043 non-null   float64\n",
+            " 19  TotalCharges      7043 non-null   object \n",
+            " 20  Churn             7043 non-null   object \n",
+            "dtypes: float64(1), int64(2), object(18)\n",
+            "memory usage: 1.1+ MB\n",
+            "None\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "65X8PNPdOsDP"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "sBDS7anU3jxE"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "2dc898d8",
+        "outputId": "024ba3ac-c729-43fa-d6e4-fdea715dc6a7"
+      },
+      "source": [
+        "from google.colab import drive\n",
+        "drive.mount('/content/drive')"
+      ],
+      "execution_count": 25,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Mounted at /content/drive\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "691ae23e"
+      },
+      "source": [
+        "After mounting, you can read the CSV file by providing the correct path to the file in your Google Drive. Replace `'path/to/your/file.csv'` with the actual path to your file."
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "24f5a7a0",
+        "outputId": "b67cd157-09e7-4900-c0d9-58233b59c8cb"
+      },
+      "source": [
+        "import pandas as pd\n",
+        "file_path = '/content/drive/My Drive/WA_Fn-UseC_-Telco-Customer-Churn.csv' # Replace with the actual path if different\n",
+        "try:\n",
+        "    df = pd.read_csv(file_path)\n",
+        "    print(df.head())\n",
+        "    print(df.info())\n",
+        "except FileNotFoundError:\n",
+        "    print(f\"Error: The file was not found at {file_path}. Please check the path.\")\n",
+        ""
+      ],
+      "execution_count": 26,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "   customerID  gender  SeniorCitizen Partner Dependents  tenure PhoneService  \\\n",
+            "0  7590-VHVEG  Female              0     Yes         No       1           No   \n",
+            "1  5575-GNVDE    Male              0      No         No      34          Yes   \n",
+            "2  3668-QPYBK    Male              0      No         No       2          Yes   \n",
+            "3  7795-CFOCW    Male              0      No         No      45           No   \n",
+            "4  9237-HQITU  Female              0      No         No       2          Yes   \n",
+            "\n",
+            "      MultipleLines InternetService OnlineSecurity  ... DeviceProtection  \\\n",
+            "0  No phone service             DSL             No  ...               No   \n",
+            "1                No             DSL            Yes  ...              Yes   \n",
+            "2                No             DSL            Yes  ...               No   \n",
+            "3  No phone service             DSL            Yes  ...              Yes   \n",
+            "4                No     Fiber optic             No  ...               No   \n",
+            "\n",
+            "  TechSupport StreamingTV StreamingMovies        Contract PaperlessBilling  \\\n",
+            "0          No          No              No  Month-to-month              Yes   \n",
+            "1          No          No              No        One year               No   \n",
+            "2          No          No              No  Month-to-month              Yes   \n",
+            "3         Yes          No              No        One year               No   \n",
+            "4          No          No              No  Month-to-month              Yes   \n",
+            "\n",
+            "               PaymentMethod MonthlyCharges  TotalCharges Churn  \n",
+            "0           Electronic check          29.85         29.85    No  \n",
+            "1               Mailed check          56.95        1889.5    No  \n",
+            "2               Mailed check          53.85        108.15   Yes  \n",
+            "3  Bank transfer (automatic)          42.30       1840.75    No  \n",
+            "4           Electronic check          70.70        151.65   Yes  \n",
+            "\n",
+            "[5 rows x 21 columns]\n",
+            "<class 'pandas.core.frame.DataFrame'>\n",
+            "RangeIndex: 7043 entries, 0 to 7042\n",
+            "Data columns (total 21 columns):\n",
+            " #   Column            Non-Null Count  Dtype  \n",
+            "---  ------            --------------  -----  \n",
+            " 0   customerID        7043 non-null   object \n",
+            " 1   gender            7043 non-null   object \n",
+            " 2   SeniorCitizen     7043 non-null   int64  \n",
+            " 3   Partner           7043 non-null   object \n",
+            " 4   Dependents        7043 non-null   object \n",
+            " 5   tenure            7043 non-null   int64  \n",
+            " 6   PhoneService      7043 non-null   object \n",
+            " 7   MultipleLines     7043 non-null   object \n",
+            " 8   InternetService   7043 non-null   object \n",
+            " 9   OnlineSecurity    7043 non-null   object \n",
+            " 10  OnlineBackup      7043 non-null   object \n",
+            " 11  DeviceProtection  7043 non-null   object \n",
+            " 12  TechSupport       7043 non-null   object \n",
+            " 13  StreamingTV       7043 non-null   object \n",
+            " 14  StreamingMovies   7043 non-null   object \n",
+            " 15  Contract          7043 non-null   object \n",
+            " 16  PaperlessBilling  7043 non-null   object \n",
+            " 17  PaymentMethod     7043 non-null   object \n",
+            " 18  MonthlyCharges    7043 non-null   float64\n",
+            " 19  TotalCharges      7043 non-null   object \n",
+            " 20  Churn             7043 non-null   object \n",
+            "dtypes: float64(1), int64(2), object(18)\n",
+            "memory usage: 1.1+ MB\n",
+            "None\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Drop customerID (not useful)\n",
+        "df.drop(\"customerID\", axis=1, inplace=True)\n",
+        "\n",
+        "# Convert TotalCharges to numeric (some values may be blank)\n",
+        "df[\"TotalCharges\"] = pd.to_numeric(df[\"TotalCharges\"], errors=\"coerce\")\n",
+        "df[\"TotalCharges\"].fillna(df[\"TotalCharges\"].median(), inplace=True)\n",
+        "\n",
+        "# Encode categorical features\n",
+        "for col in df.select_dtypes(include=\"object\").columns:\n",
+        "    if col != \"Churn\":\n",
+        "        df[col] = LabelEncoder().fit_transform(df[col])\n",
+        "\n",
+        "# Encode target variable\n",
+        "df[\"Churn\"] = df[\"Churn\"].map({\"Yes\":1, \"No\":0})\n",
+        "\n",
+        "# Feature scaling\n",
+        "scaler = StandardScaler()\n",
+        "scaled_cols = [\"tenure\",\"MonthlyCharges\",\"TotalCharges\"]\n",
+        "df[scaled_cols] = scaler.fit_transform(df[scaled_cols])\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "70PQdL0WaPR4",
+        "outputId": "3f42b5ed-2b67-40eb-fe98-585cb1296a7b"
+      },
+      "execution_count": 36,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/tmp/ipython-input-4232330293.py:6: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.\n",
+            "The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.\n",
+            "\n",
+            "For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.\n",
+            "\n",
+            "\n",
+            "  df[\"TotalCharges\"].fillna(df[\"TotalCharges\"].median(), inplace=True)\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "X = df.drop(\"Churn\", axis=1)\n",
+        "y = df[\"Churn\"]\n",
+        "\n",
+        "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)\n"
+      ],
+      "metadata": {
+        "id": "BM7XDFcsbkIz"
+      },
+      "execution_count": 38,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "model = LogisticRegression(max_iter=1000)\n",
+        "model.fit(X_train, y_train)\n",
+        "\n",
+        "y_pred = model.predict(X_test)\n"
+      ],
+      "metadata": {
+        "id": "VtaJJaOfd4JA"
+      },
+      "execution_count": 39,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.metrics import accuracy_score, classification_report, confusion_matrix\n",
+        "import seaborn as sns\n",
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "print(\"Accuracy:\", accuracy_score(y_test, y_pred))\n",
+        "print(\"\\nClassification Report:\\n\", classification_report(y_test, y_pred))\n",
+        "\n",
+        "sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, fmt='d', cmap=\"Blues\")\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 638
+        },
+        "id": "2sTz3i5nfrJB",
+        "outputId": "38736032-35a8-433c-c2b9-b9800c119835"
+      },
+      "execution_count": 41,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Accuracy: 0.8176011355571328\n",
+            "\n",
+            "Classification Report:\n",
+            "               precision    recall  f1-score   support\n",
+            "\n",
+            "           0       0.86      0.90      0.88      1036\n",
+            "           1       0.68      0.58      0.63       373\n",
+            "\n",
+            "    accuracy                           0.82      1409\n",
+            "   macro avg       0.77      0.74      0.75      1409\n",
+            "weighted avg       0.81      0.82      0.81      1409\n",
+            "\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 2 Axes>"
+            ],
+            "image/png": "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\n"
+          },
+          "metadata": {}
+        }
+      ]
+    }
+  ]
+}
